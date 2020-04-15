@@ -89,14 +89,16 @@ public class SplashScreenHelper {
   }
 
   private void drawText(String str) {
-    splashGraphics.setPaint(Color.BLACK);
+    splashGraphics.setColor(Color.BLACK);
     FontMetrics metrics = splashGraphics.getFontMetrics();
     splashGraphics.drawString(str, (int) splashTextArea.getX() + 10, (int) splashTextArea.getY() + (TEXTAREA_HEIGHT - metrics.getHeight()) + 5);
   }
 
   private void eraseLastStatusText() {
-    splashGraphics.setPaint(new Color(229, 229, 229));
-    splashGraphics.fill(splashTextArea);
+    splashGraphics.setComposite(AlphaComposite.Clear);
+    splashGraphics.setPaint(Color.BLACK);
+    splashGraphics.fillRect(X_OFFSET, Y_OFFSET, TEXTAREA_WIDTH, TEXTAREA_HEIGHT);
+    splashGraphics.setPaintMode();
   }
 
   private void prepareTextAreaAndGraphics() {
