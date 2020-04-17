@@ -43,6 +43,7 @@ public class SplashScreenHelper {
   private static final int Y_OFFSET = 300;
   private static final int TEXTAREA_HEIGHT = 30;
   private static final int TEXTAREA_WIDTH = 475;
+  private static final Color TEXT_COLOR = Color.WHITE;
 
   private final Map desktopHints;
   private final SplashScreen splash;
@@ -92,11 +93,13 @@ public class SplashScreenHelper {
     splashGraphics.setColor(Color.BLACK);
     FontMetrics metrics = splashGraphics.getFontMetrics();
     splashGraphics.drawString(str, (int) splashTextArea.getX() + 10, (int) splashTextArea.getY() + (TEXTAREA_HEIGHT - metrics.getHeight()) + 5);
+    splashGraphics.setColor(TEXT_COLOR);
   }
 
   private void eraseLastStatusText() {
     splashGraphics.setComposite(AlphaComposite.Clear);
     splashGraphics.setPaint(Color.BLACK);
+    splashGraphics.setPaint(TEXT_COLOR);
     splashGraphics.fillRect(X_OFFSET, Y_OFFSET, TEXTAREA_WIDTH, TEXTAREA_HEIGHT);
     splashGraphics.setPaintMode();
   }
