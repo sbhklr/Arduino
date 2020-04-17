@@ -35,14 +35,17 @@ import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.util.Map;
 
+import processing.app.BaseNoGui;
 import processing.app.Theme;
 
 public class SplashScreenHelper {
 
-  private static final int X_OFFSET = 0;
-  private static final int Y_OFFSET = 300;
-  private static final int TEXTAREA_HEIGHT = 30;
-  private static final int TEXTAREA_WIDTH = 475;
+  private static final int X_OFFSET = 50;
+  private static final int STATUS_MESSAGE_Y_OFFSET = 260;
+  private static final int RELEASE_VERSION_Y_OFFSET = 55;
+  private static final int TEXTAREA_HEIGHT = 20;
+  private static final int TEXTAREA_WIDTH = 256;
+  private static final int RELEASE_VERSION_FONT_SIZE = 10;
   private static final Color TEXT_COLOR = Color.WHITE;
 
   private final Map desktopHints;
@@ -72,6 +75,8 @@ public class SplashScreenHelper {
 
     if (splashTextArea == null) {
       prepareTextAreaAndGraphics();
+      drawReleaseVersion(splashGraphics);
+      setStatusMessageFont();
     }
 
     eraseLastStatusText();
@@ -89,23 +94,33 @@ public class SplashScreenHelper {
     }
   }
 
-  private void drawText(String str) {
-    splashGraphics.setColor(Color.BLACK);
-    FontMetrics metrics = splashGraphics.getFontMetrics();
-    splashGraphics.drawString(str, (int) splashTextArea.getX() + 10, (int) splashTextArea.getY() + (TEXTAREA_HEIGHT - metrics.getHeight()) + 5);
-    splashGraphics.setColor(TEXT_COLOR);
+  private void drawReleaseVersion(Graphics2D graphics) {       
+    Font font = new Font("Monospaced", Font.PLAIN, RELEASE_VERSION_FONT_SIZE);
+    graphics.setFont(font);
+    graphics.setColor(TEXT_COLOR);    
+    graphics.drawString("RELEASE " + BaseNoGui.VERSION_NAME_LONG, X_OFFSET, RELEASE_VERSION_Y_OFFSET);
+  }
+  
+  private void drawText(String str) {    
+    splashGraphics.setColor(TEXT_COLOR);    
+    FontMetrics metrics = splashGraphics.getFontMetrics();    
+    splashGraphics.drawString(str, (int) splashTextArea.getX(), (int) splashTextArea.getY() + (TEXTAREA_HEIGHT - metrics.getHeight()) + 5);
+  }
+
+  private void setStatusMessageFont() {
+    Font defaultFont = Theme.getDefaultFont();
+    splashGraphics.setFont(defaultFont);        
   }
 
   private void eraseLastStatusText() {
     splashGraphics.setComposite(AlphaComposite.Clear);
-    splashGraphics.setPaint(Color.BLACK);
     splashGraphics.setPaint(TEXT_COLOR);
-    splashGraphics.fillRect(X_OFFSET, Y_OFFSET, TEXTAREA_WIDTH, TEXTAREA_HEIGHT);
+    splashGraphics.fillRect(X_OFFSET, STATUS_MESSAGE_Y_OFFSET, TEXTAREA_WIDTH, TEXTAREA_HEIGHT);
     splashGraphics.setPaintMode();
   }
 
   private void prepareTextAreaAndGraphics() {
-    splashTextArea = new Rectangle2D.Double(X_OFFSET, Y_OFFSET, TEXTAREA_WIDTH, TEXTAREA_HEIGHT);
+    splashTextArea = new Rectangle2D.Double(X_OFFSET, STATUS_MESSAGE_Y_OFFSET, TEXTAREA_WIDTH, TEXTAREA_HEIGHT);
 
     splashGraphics = Theme.setupGraphics2D(splash.createGraphics());
 
