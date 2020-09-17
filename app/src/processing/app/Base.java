@@ -88,6 +88,7 @@ import static processing.app.I18n.tr;
 public class Base {
 
   private static final int RECENT_SKETCHES_MAX_SIZE = 10;
+  private SketchManager sketchManager = new SketchManager();
 
   private static boolean commandLine;
   public static volatile Base INSTANCE;
@@ -148,6 +149,7 @@ public class Base {
 
     try {
       INSTANCE = new Base(args);
+      (new WelcomeScreen(INSTANCE.getSketchManager())).show();
     } catch (Throwable e) {
       e.printStackTrace(System.err);
       System.exit(255);
@@ -515,6 +517,10 @@ public class Base {
       System.out.println("Arduino: " + BaseNoGui.VERSION_NAME_LONG);
       System.exit(0);
     }
+  }
+  
+  public SketchManager getSketchManager() {
+    return sketchManager;
   }
 
   private void installKeyboardInputMap() {
@@ -903,27 +909,10 @@ public class Base {
     return editor;
   }
 
-  protected void rebuildRecentSketchesMenuItems() {
-    Set<File> recentSketches = new LinkedHashSet<File>() {
-
-      @Override
-      public boolean add(File file) {
-        if (size() >= RECENT_SKETCHES_MAX_SIZE) {
-          return false;
-        }
-        return super.add(file);
-      }
-    };
-
-    for (String path : PreferencesData.getCollection("recent.sketches")) {
-      File file = new File(path);
-      if (file.exists()) {
-        recentSketches.add(file);
-      }
-    }
-
+  protected void rebuildRecentSketchesMenuItems() {    
     recentSketchesMenuItems.clear();
-    for (final File recentSketch : recentSketches) {
+
+    for (final File recentSketch : sketchManager.getRecentSketchFiles(RECENT_SKETCHES_MAX_SIZE)) {
       JMenuItem recentSketchMenuItem = new JMenuItem(recentSketch.getParentFile().getName());
       recentSketchMenuItem.addActionListener(new ActionListener() {
         @Override
@@ -937,6 +926,7 @@ public class Base {
       });
       recentSketchesMenuItems.add(recentSketchMenuItem);
     }
+
   }
 
 
@@ -947,7 +937,6 @@ public class Base {
    * @return true if succeeded in closing, false if canceled.
    */
   public boolean handleClose(Editor editor) {
-
     if (editors.size() == 1) {
       if (!handleQuit()) {
         return false;
