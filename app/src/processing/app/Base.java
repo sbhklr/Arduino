@@ -88,7 +88,7 @@ import static processing.app.I18n.tr;
 public class Base {
 
   private static final int RECENT_SKETCHES_MAX_SIZE = 10;
-  private SketchManager sketchManager = new SketchManager();
+  private SketchManager sketchManager;
 
   private static boolean commandLine;
   public static volatile Base INSTANCE;
@@ -225,6 +225,8 @@ public class Base {
 
     BaseNoGui.checkInstallationFolder();
 
+    sketchManager = new SketchManager(this);
+    
     // If no path is set, get the default sketchbook folder for this platform
     if (BaseNoGui.getSketchbookPath() == null) {
       File defaultFolder = getDefaultSketchbookFolderOrPromptForIt();
@@ -574,36 +576,7 @@ public class Base {
     PreferencesData.setInteger("last.screen.height", screen.height);
   }
 
-  /**
-   * Store list of sketches that are currently open.
-   * Called when the application is quitting and documents are still open.
-   */
-  protected void storeSketches() {
-
-    // If there is only one sketch opened save his position as default
-    if (editors.size() == 1) {
-      storeSketchLocation(editors.get(0), ".default");
-    }
-
-    // Save the sketch path and window placement for each open sketch
-    String untitledPath = untitledFolder.getAbsolutePath();
-    List<Editor> reversedEditors = new LinkedList<>(editors);
-    Collections.reverse(reversedEditors);
-    int index = 0;
-    for (Editor editor : reversedEditors) {
-      Sketch sketch = editor.getSketch();
-      String path = sketch.getMainFilePath();
-      // Skip untitled sketches if they do not contains changes.
-      if (path.startsWith(untitledPath) && !sketch.isModified()) {
-        continue;
-      }
-      storeSketchLocation(editor, "" + index);
-      index++;
-    }
-    PreferencesData.setInteger("last.sketch.count", index);
-  }
-
-  private void storeSketchLocation(Editor editor, String index) {
+  void storeSketchLocation(Editor editor, String index) {
     String path = editor.getSketch().getMainFilePath();
     String loc = StringUtils.join(editor.getPlacement(), ',');
     PreferencesData.set("last.sketch" + index + ".path", path);
@@ -628,24 +601,6 @@ public class Base {
     if (locationStr == null)
       return defaultEditorLocation();
     return PApplet.parseInt(PApplet.split(locationStr, ','));
-  }
-
-  protected void storeRecentSketches(SketchController sketch) {
-    if (sketch.isUntitled()) {
-      return;
-    }
-
-    Set<String> sketches = new LinkedHashSet<>();
-    sketches.add(sketch.getSketch().getMainFilePath());
-    sketches.addAll(PreferencesData.getCollection("recent.sketches"));
-
-    PreferencesData.setCollection("recent.sketches", sketches);
-  }
-
-  protected void removeRecentSketchPath(String path) {
-    Collection<String> sketches = new LinkedList<>(PreferencesData.getCollection("recent.sketches"));
-    sketches.remove(path);
-    PreferencesData.setCollection("recent.sketches", sketches);
   }
 
   // Because of variations in native windowing systems, no guarantees about
@@ -896,8 +851,8 @@ public class Base {
     if (storeOpenedSketches) {
       // Store information on who's open and running
       // (in case there's a crash or something that can't be recovered)
-      storeSketches();
-      storeRecentSketches(editor.getSketchController());
+      sketchManager.storeSketches();
+      sketchManager.storeRecentSketches(editor.getSketchController());
       rebuildRecentSketchesMenuItems();
       PreferencesData.save();
     }
@@ -968,7 +923,7 @@ public class Base {
     // If quit is canceled, this will be replaced anyway
     // by a later handleQuit() that is not canceled.
     storeScreenDimensions();
-    storeSketches();
+    sketchManager.storeSketches();
     try {
       Editor.serialMonitor.close();
     } catch (Exception e) {

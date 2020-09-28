@@ -1901,9 +1901,9 @@ public class Editor extends JFrame implements RunnerListener {
       if (saved) {
         statusNotice(tr("Done Saving."));
         if (wasReadOnly) {
-          base.removeRecentSketchPath(previousMainFilePath);
+          base.getSketchManager().removeRecentSketchPath(previousMainFilePath);
         }
-        base.storeRecentSketches(sketchController);
+        base.getSketchManager().storeRecentSketches(sketchController);
         base.rebuildRecentSketchesMenuItems();
       } else {
         statusEmpty();
@@ -1941,7 +1941,7 @@ public class Editor extends JFrame implements RunnerListener {
     statusNotice(tr("Saving..."));
     try {
       if (sketchController.saveAs()) {
-        base.storeRecentSketches(sketchController);
+        base.getSketchManager().storeRecentSketches(sketchController);
         base.rebuildRecentSketchesMenuItems();
         statusNotice(tr("Done Saving."));
         // Disabling this for 0125, instead rebuild the menu inside
