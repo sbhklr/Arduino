@@ -15,6 +15,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -69,6 +71,11 @@ public class WelcomeScreen {
   }
 
   public void show() {
+    if(welcomeScreenFrame != null) {
+      welcomeScreenFrame.toFront();
+      return;
+    }
+    
     String version = BaseNoGui.VERSION_NAME_LONG;
     welcomeScreenFrame = new JFrame(graphicsConfig);
     welcomeScreenFrame.setTitle("Arduino" + version);
@@ -87,12 +94,20 @@ public class WelcomeScreen {
     addRecentSketchTable(contentPanel);
     addQuickActions(contentPanel);
     addNewsSection(contentPanel);
-    welcomeScreenFrame.setVisible(true);
     
+    welcomeScreenFrame.addWindowListener(new WindowAdapter() {
+      @Override
+      public void windowClosing(WindowEvent windowEvent) {
+         welcomeScreenFrame = null;
+      }
+  });
+    
+    welcomeScreenFrame.setVisible(true);
   }
 
   void close() {
     this.welcomeScreenFrame.dispose();
+    this.welcomeScreenFrame = null;
   }
 
   void addRecentSketchTable(JComponent frame) {
