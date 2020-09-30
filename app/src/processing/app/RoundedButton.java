@@ -6,6 +6,8 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -60,15 +62,18 @@ class RoundedButton extends JComponent {
      */
     @Override
     public void paint(Graphics g) {
-
+      Graphics2D graphics2D = (Graphics2D) g.create();
+      graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+              RenderingHints.VALUE_ANTIALIAS_ON);
+      
         // paint the interior of the button
         if (pressed) {
-            g.setColor(getBackground().darker().darker());
+            graphics2D.setColor(getBackground().darker().darker());
         } else {
-            g.setColor(getBackground());
+            graphics2D.setColor(getBackground());
         }
-        int radius = 32;
-        g.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, radius, radius);
+        int radius = 36;
+        graphics2D.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, radius, radius);
 
         // draw the perimeter of the button
 //        g.setColor(getBackground().darker().darker().darker());
@@ -78,8 +83,8 @@ class RoundedButton extends JComponent {
         Font f = getFont();
         if (f != null) {
             FontMetrics fm = getFontMetrics(getFont());
-            g.setColor(getForeground());
-            g.drawString(label, getWidth() / 2 - fm.stringWidth(label) / 2, getHeight() / 2 + fm.getMaxDescent());
+            graphics2D.setColor(getForeground());
+            graphics2D.drawString(label, getWidth() / 2 - fm.stringWidth(label) / 2, getHeight() / 2 + fm.getMaxDescent());
         }
     }
 
