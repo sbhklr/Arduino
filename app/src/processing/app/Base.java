@@ -149,7 +149,8 @@ public class Base {
 
     try {
       INSTANCE = new Base(args);
-      (new WelcomeScreen(INSTANCE.getSketchManager())).show();
+      welcomeScreen = new WelcomeScreen(INSTANCE.getSketchManager());
+      welcomeScreen.show();
     } catch (Throwable e) {
       e.printStackTrace(System.err);
       System.exit(255);
@@ -523,6 +524,10 @@ public class Base {
   
   public SketchManager getSketchManager() {
     return sketchManager;
+  }
+  
+  public WelcomeScreen getWelcomeScreen() {
+    return welcomeScreen;
   }
 
   private void installKeyboardInputMap() {
@@ -1275,6 +1280,7 @@ public class Base {
 
   private static String priorPlatformFolder;
   private static boolean newLibraryImported;
+  private static WelcomeScreen welcomeScreen;
 
   public void onBoardOrPortChange() {
     BaseNoGui.onBoardOrPortChange();

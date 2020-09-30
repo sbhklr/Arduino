@@ -53,7 +53,7 @@ public class ThinkDifferent {
         public void appReOpened(AppReOpenedEvent aroe) {
           try {
             if (Base.INSTANCE.getEditors().size() == 0) {
-              Base.INSTANCE.handleNew();
+              Base.INSTANCE.getWelcomeScreen().show();
             }
           } catch (Exception e) {
             // TODO Auto-generated catch block
