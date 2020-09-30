@@ -50,7 +50,7 @@ public class WelcomeScreen {
   private static final int SPACE_BETWEEN_IMAGES = 20;
   private static final int SKETCH_TABLE_ROW_HEIGHT = 55;
   private static final Color COLOR_BASE_GRAY = new Color(244,244,244);
-  private static final int MAX_RECENT_SKETCHES = 3;
+  private static final int MAX_RECENT_SKETCHES = 8;
   private static final boolean RESIZABLE = true;
 
   private int hoveredRow = -1;
