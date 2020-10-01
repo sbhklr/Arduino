@@ -18,13 +18,17 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 import javax.swing.Box;
@@ -279,9 +283,12 @@ public class WelcomeScreen {
     JPanel imageContainer = new JPanel();
     imageContainer.setBackground(COLOR_TRANSPARENT);
     imageContainer.setLayout(new BoxLayout(imageContainer, BoxLayout.X_AXIS));
-    imageContainer.add(imageFromURL("https://content.arduino.cc/assets/Arduino-IDE-Marketing-1.png", "https://arduino.cc"));
+    
+    String[] linksFromURL = linksFromURL("https://content.arduino.cc/assets/Arduino-IDE-Marketing-Links.txt");
+    
+    imageContainer.add(imageFromURL("https://content.arduino.cc/assets/Arduino-IDE-Marketing-1.png", linksFromURL[0]));
     imageContainer.add(createSpacer(SPACE_BETWEEN_IMAGES, 0));
-    imageContainer.add(imageFromURL("https://content.arduino.cc/assets/Arduino-IDE-Marketing-2.png", "https://arduino.cc"));
+    imageContainer.add(imageFromURL("https://content.arduino.cc/assets/Arduino-IDE-Marketing-2.png", linksFromURL[1]));
     imageContainer.setAlignmentX(Component.LEFT_ALIGNMENT);
     
     JLabel label = createTitleLabel("What’s new at Arduino?");
@@ -343,7 +350,19 @@ public class WelcomeScreen {
     label.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
     return label;
   }
+  
+  String[] linksFromURL(String fileURL){
+    try {
+      URL url = new URL(fileURL);
+      InputStream in = url.openStream();
+      BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+      String content = reader.lines().collect(Collectors.joining(System.lineSeparator()));
+      reader.close();
+      return content.split("\n");
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
 
 }
-
-
